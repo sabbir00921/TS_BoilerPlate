@@ -1,14 +1,20 @@
-import mongoose, { Schema, Document, Model } from 'mongoose';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import CustomError from './../helpers/CustomError';
-import config from '../config';
+import mongoose, { Schema, Document, Model } from "mongoose";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import CustomError from "./../helpers/CustomError";
+import config from "../config";
 
 export interface IUser extends Document {
   name: string;
   email: string;
   password: string;
   role: string;
+  profileImage: [
+    {
+      public_id: string;
+      secure_url: string;
+    }
+  ];
   status: string;
   refreshToken: string | null;
   forgetPasswordOtp: number | null;
@@ -37,9 +43,18 @@ const userSchema = new Schema<IUser>(
       type: String,
       required: true,
     },
+    profileImage: [
+      {
+        public_id: String,
+        secure_url: String,
+        _id: false,
+      },
+    ],
     status: {
       type: String,
       required: true,
+      default: "active",
+      enum: ["active", "inactive", "blocked"],
     },
     refreshToken: {
       type: String,
@@ -53,24 +68,24 @@ const userSchema = new Schema<IUser>(
   },
   {
     timestamps: true,
-  },
+  }
 );
 
 //
-userSchema.pre<IUser>('save', async function () {
+userSchema.pre<IUser>("save", async function () {
   const userModel = this.constructor as Model<IUser>;
   const existingUser = await userModel.findOne({
     email: this.email,
   });
 
   if (existingUser && existingUser._id.toString() !== this._id.toString()) {
-    throw new CustomError(409, 'Email already exists');
+    throw new CustomError(409, "Email already exists");
   }
 });
 
 // encrypt password in pre middleware
-userSchema.pre<IUser>('save', async function () {
-  if (!this.isModified('password')) return;
+userSchema.pre<IUser>("save", async function () {
+  if (!this.isModified("password")) return;
 
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
@@ -78,7 +93,7 @@ userSchema.pre<IUser>('save', async function () {
 
 // compare password
 userSchema.methods.comparePassword = async function (
-  password: string,
+  password: string
 ): Promise<boolean> {
   return await bcrypt.compare(password, this.password);
 };
@@ -86,11 +101,11 @@ userSchema.methods.comparePassword = async function (
 //create access token
 userSchema.methods.createAccessToken = function () {
   return jwt.sign(
-    { userId: this._id },
+    { userId: this._id, email: this.email },
     config.jwt.accessTokenSecret as string,
     {
       expiresIn: config.jwt.accessTokenExpires as any,
-    },
+    }
   );
 };
 
@@ -101,7 +116,7 @@ userSchema.methods.createRefreshToken = function () {
     config.jwt.refreshTokenSecret as string,
     {
       expiresIn: config.jwt.refreshTokenExpires as any,
-    },
+    }
   );
 };
 
@@ -116,6 +131,6 @@ userSchema.methods.verifyRefreshToken = function (token: string) {
 };
 
 export const userModel: Model<IUser> = mongoose.model<IUser>(
-  'User',
-  userSchema,
+  "User",
+  userSchema
 );

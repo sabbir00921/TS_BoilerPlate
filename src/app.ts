@@ -7,9 +7,20 @@ import {
   ServerLiveEmailTemplateProps,
 } from "./tempaletes/serverlive.template";
 import config from "./config";
+import cookieParser from "cookie-parser";
+import morgan from "morgan";
+import cors from "cors";
 
 const app = express();
 
+if (config.env === "development") {
+  app.use(morgan("dev"));
+} else {
+  app.use(morgan("short"));
+}
+
+app.use(cors());
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

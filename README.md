@@ -30,7 +30,7 @@ A robust and scalable Node.js backend boilerplate built with TypeScript, Express
 1. **Clone the repository**
    ```bash
    git clone <your-repo-url>
-   cd boilerplate-web-nodejs-typescript
+   cd TS_BoilerPlate
    ```
 
 2. **Install dependencies**
@@ -107,18 +107,18 @@ npm run prettier:fix  # Fix formatting issues
 
 ```
 src/
-├── app/
-│   ├── config/          # Environment configuration
-│   ├── error/           # Error handling utilities
-│   ├── middlewares/     # Custom middleware
-│   └── routes/          # Route definitions
+├── config/              # Environment & app config
+├── helpers/             # Utilities (CustomError, asyncHandler)
+├── middlewares/         # Auth, error, rate limit
 ├── modules/
-│   ├── auth/            # Authentication module
-│   └── user/            # User management module
-├── helper/              # Utility functions
-├── utils/               # Additional utilities
-├── server.ts           # Server entry point
-└── app.ts              # Express app configuration
+│   ├── auth/            # Auth logic
+│   ├── user/            # User module
+├── routes/              # API routes
+├── socket/              # Socket.IO logic
+├── utils/               # Helpers
+├── app.ts               # Express setup
+└── server.ts            # App entry
+
 ```
 
 ## 🔌 API Endpoints
@@ -132,20 +132,6 @@ src/
 - `POST /reset-password` - Reset password with OTP
 - `POST /logout` - User logout
 
-### User Routes (`/api/v1/user`)
-- `POST /create-user` - Create new user (admin only)
-- `GET /get-all-user` - Get all users
-- `GET /get-user/:id` - Get user by ID
-- `PUT /update-user/:id` - Update user information
-- `DELETE /delete-user/:id` - Delete user (admin only)
-
-## 🛡️ Authentication Flow
-
-1. **Registration**: User registers → receives OTP via email → verifies email
-2. **Login**: User logs in → receives access and refresh tokens
-3. **Protected Routes**: JWT token required in Authorization header
-4. **Token Refresh**: Use refresh token to get new access token
-5. **Password Reset**: Request OTP → verify OTP → set new password
 
 ## 📧 Email Templates
 
@@ -176,14 +162,6 @@ Socket.IO is integrated for real-time functionality:
   verified?: boolean;
 }
 ```
-
-## 🚨 Error Handling
-
-The application includes comprehensive error handling for:
-- Validation errors (Zod)
-- Database errors (Mongoose)
-- Authentication errors
-- Custom application errors
 
 ## 🔧 Configuration
 
@@ -219,9 +197,6 @@ npm run build
 ```bash
 npm start:prod
 ```
-
-### Docker (Optional)
-Consider adding Docker configuration for containerized deployment.
 
 ## 🤝 Contributing
 
