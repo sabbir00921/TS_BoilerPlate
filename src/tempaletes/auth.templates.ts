@@ -151,3 +151,79 @@ export const forgotPasswordOtpTemplate = (
 </html>
 `;
 };
+
+export const accountVerifyTemplate = (name: string, otp: number |null): any => {
+  return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Verify Your Account</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #f4f6f8;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      background: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      overflow: hidden;
+    }
+    .header {
+      background: #2563eb;
+      color: #ffffff;
+      padding: 20px;
+      text-align: center;
+      font-size: 22px;
+      font-weight: bold;
+    }
+    .content {
+      padding: 30px;
+      color: #333;
+      line-height: 1.6;
+    }
+    .otp {
+      margin: 24px 0;
+      text-align: center;
+      font-size: 32px;
+      font-weight: bold;
+      letter-spacing: 6px;
+      color: #2563eb;
+    }
+    .footer {
+      padding: 20px;
+      background: #f9fafb;
+      text-align: center;
+      font-size: 13px;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      Account Verification
+    </div>
+    <div class="content">
+      <p>Hello <strong>${name}</strong>,</p>
+      <p>Please use the OTP below to verify your account:</p>
+
+      <div class="otp">${otp}</div>
+
+      <p>This OTP is valid for <strong>10 minutes</strong>.</p>
+      <p>If you didn’t request this, please ignore this email.</p>
+    </div>
+    <div class="footer">
+      © ${new Date().getFullYear()} Your App Name
+    </div>
+  </div>
+</body>
+</html>
+`;
+};

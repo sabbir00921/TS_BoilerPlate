@@ -5,7 +5,10 @@ import CustomError from "./../helpers/CustomError";
 import { asyncHandler } from "./../utils/asyncHandler";
 import crypto from "crypto";
 import { mailer } from "./../helpers/nodeMailer";
-import { forgotPasswordOtpTemplate } from "./../tempaletes/auth.templates";
+import {
+  accountVerifyTemplate,
+  forgotPasswordOtpTemplate,
+} from "./../tempaletes/auth.templates";
 import config from "../config";
 import jwt from "jsonwebtoken";
 import { uploadCloudinary } from "../helpers/cloudinary";
@@ -19,10 +22,66 @@ interface authRequest extends Request {
 //create user/register user
 export const registration = asyncHandler(
   async (req: Request, res: Response) => {
-    const user = await userModel.create(req.body);
-    ApiResponse.sendSuccess(res, 200, "User registered successfully", user);
+    // create verification otp
+    const verificationOtp = crypto.randomInt(100000, 999999);
+
+    // create user with otp
+    const user = await userModel.create({
+      ...req.body,
+      verificationOtp,
+      verificationOtpExpires: Date.now() + 10 * 60 * 1000,
+    });
+
+    // remove sensitive fields
+    const responseUser = await userModel
+      .findById(user._id)
+      .select("-password -refreshToken -verificationOtp");
+
+    if (responseUser) {
+      const verificationTemplate = accountVerifyTemplate(
+        responseUser.name,
+        verificationOtp
+      );
+
+      await mailer({
+        subject: "Account Verification",
+        template: verificationTemplate,
+        email: responseUser.email,
+      });
+    }
+
+    ApiResponse.sendSuccess(
+      res,
+      200,
+      "User registered successfully",
+      responseUser
+    );
   }
 );
+
+//verify email
+export const verifyEmail = asyncHandler(async (req: Request, res: Response) => {
+  const otp = req.body.otp;
+  if (!otp) throw new CustomError(400, "Otp not found");
+
+  const user = await userModel.findOne({
+    email: (req as authRequest).user.email,
+  });
+  if (!user) throw new CustomError(400, "Email not found");
+
+  if (user.isVerified) throw new CustomError(400, "Email already verified");
+
+  if (user.verificationOtp !== otp) throw new CustomError(400, "Invalid otp");
+
+  user.isVerified = true;
+  user.verificationOtp = null;
+  await user.save();
+
+  ApiResponse.sendSuccess(res, 200, "Email verified successfully", {
+    name: user.name,
+    email: user.email,
+  });
+});
 
 //login
 export const login = asyncHandler(async (req: Request, res: Response) => {

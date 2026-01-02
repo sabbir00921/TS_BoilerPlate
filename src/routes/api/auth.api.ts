@@ -6,7 +6,7 @@ import {
   logout,
   registration,
   resetPassword,
-  generateAccessToken,
+  generateAccessToken,verifyEmail
 } from "../../controller/user.controller";
 import { authGuard } from "../../middleware/auth.middleware";
 import { upload } from "../../middleware/multer.midleware";
@@ -14,6 +14,7 @@ import { upload } from "../../middleware/multer.midleware";
 const router = express.Router();
 
 router.route("/register").post(registration);
+router.route("/verify-email").post(authGuard,verifyEmail);
 router.route("/login").post(login);
 router
   .route("/update-user")

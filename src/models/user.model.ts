@@ -16,6 +16,8 @@ export interface IUser extends Document {
     }
   ];
   status: string;
+  isVerified: boolean;
+  verificationOtp: number | null;
   refreshToken: string | null;
   forgetPasswordOtp: number | null;
   frogetPasswordOtpExpire: Date | null;
@@ -55,6 +57,14 @@ const userSchema = new Schema<IUser>(
       required: true,
       default: "active",
       enum: ["active", "inactive", "blocked"],
+    },
+    isVerified: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
+    verificationOtp: {
+      type: Number,
     },
     refreshToken: {
       type: String,
