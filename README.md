@@ -106,18 +106,61 @@ npm run prettier:fix  # Fix formatting issues
 ## 📁 Project Structure
 
 ```
-src/
-├── config/              # Environment & app config
-├── helpers/             # Utilities (CustomError, asyncHandler)
-├── middlewares/         # Auth, error, rate limit
-├── modules/
-│   ├── auth/            # Auth logic
-│   ├── user/            # User module
-├── routes/              # API routes
-├── socket/              # Socket.IO logic
-├── utils/               # Helpers
-├── app.ts               # Express setup
-└── server.ts            # App entry
+TS_BOILERPLATE/
+│
+├── public/                     # Static files (images, css, favicon, etc.)
+│
+├── src/
+│   ├── config/                 # App configuration (env, constants, setup)
+│   │   └── index.ts             # Central config export
+│
+│   ├── controller/             # Business logic / request handlers
+│   │   └── user.controller.ts  # User-related controllers
+│
+│   ├── database/               # Database connection & setup
+│   │   └── db.ts               # MongoDB connection logic
+│
+│   ├── helpers/                # External services & helper logic
+│   │   ├── cloudinary.ts       # Cloudinary file upload config
+│   │   ├── CustomError.ts      # Custom error class
+│   │   ├── GlobalErrorHandler.ts # Centralized error handler
+│   │   └── nodeMailer.ts       # Email sending logic
+│
+│   ├── middleware/             # Express middlewares
+│   │   ├── auth.middleware.ts  # JWT authentication middleware
+│   │   ├── multer.middleware.ts # File upload middleware
+│   │   └── permission.middleware.ts # Role/permission guard
+│
+│   ├── models/                 # Database models (Mongoose schemas)
+│   │   └── user.model.ts       # User schema & methods
+│
+│   ├── routes/                 # API route definitions
+│   │   ├── api/                # API-specific routes
+│   │   │   ├── auth.api.ts     # Auth routes (login, register, otp)
+│   │   │   └── index.api.ts    # API route aggregator
+│   │   │
+│   │   └── index.ts            # Main route loader
+│
+│   ├── templates/              # Email / HTML templates
+│   │   ├── auth.templates.ts   # OTP, auth-related emails
+│   │   └── serverlive.template.ts # Server status / live emails
+│
+│   ├── utils/                  # Reusable utilities
+│   │   ├── apiResponse.ts      # Standard API response format
+│   │   └── asyncHandler.ts     # Async error handler wrapper
+│
+│   ├── app.ts                  # Express app setup (middlewares, routes)
+│   └── server.ts               # Server bootstrap (listen, socket, etc.)
+│
+├── uploads/                    # Local uploaded files (optional)
+│
+├── .env.example                # Environment variable sample
+├── .gitignore                  # Git ignored files
+├── package.json                # Project dependencies & scripts
+├── tsconfig.json               # TypeScript configuration
+├── vercel.json                 # Vercel deployment config
+└── README.md                   # Project documentation
+
 
 ```
 
